@@ -2,6 +2,7 @@ package com.mercadolibre.android.andesui.button
 
 import android.content.Context
 import android.graphics.drawable.Animatable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -517,6 +518,14 @@ class AndesButton : ConstraintLayout {
         }
 
         createConfig().also {
+            updateComponentsAlignment(it)
+        }
+    }
+
+    fun setLeftIconDrawable(drawable: Drawable) {
+        andesButtonAttrs = andesButtonAttrs.copy(leftDrawable = drawable)
+        createConfig().also {
+            updateDynamicComponents(it)
             updateComponentsAlignment(it)
         }
     }
