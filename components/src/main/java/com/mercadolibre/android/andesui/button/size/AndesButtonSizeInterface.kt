@@ -7,6 +7,7 @@ import com.mercadolibre.android.andesui.R
 import com.mercadolibre.android.andesui.button.AndesButton
 import com.mercadolibre.android.andesui.button.factory.IconConfig
 import com.mercadolibre.android.andesui.button.hierarchy.AndesButtonHierarchyInterface
+import com.mercadolibre.android.andesui.button.hierarchy.AndesButtonIconOrientation
 import com.mercadolibre.android.andesui.icons.IconProvider
 import com.mercadolibre.android.andesui.utils.buildColoredAndesBitmapDrawable
 import java.io.FileNotFoundException
@@ -161,16 +162,16 @@ internal class AndesLargeButtonSize : AndesButtonSizeInterface {
 
         return when {
             leftIcon != null -> { // Ignoring if rightIcon is also non null: Left icon has higher precedence than right
-                handleLeftIcon(context, leftIcon, hierarchy)
+                handleStringIcon(context, leftIcon, hierarchy, AndesButtonIconOrientation.LEFT)
             }
             rightIcon != null -> {
-                handleRightIcon(context, rightIcon, hierarchy)
+                handleStringIcon(context, rightIcon, hierarchy, AndesButtonIconOrientation.RIGHT)
             }
             leftDrawable != null -> { // Ignoring if rightIcon is also non null: Left icon has higher precedence than right
-                handleLeftIcon(context, leftDrawable, hierarchy)
+                handleIcon(context, leftDrawable, hierarchy, AndesButtonIconOrientation.LEFT)
             }
             rightDrawable != null -> { // Ignoring if rightIcon is also non null: Left icon has higher precedence than right
-                handleRightIcon(context, rightDrawable, hierarchy)
+                handleIcon(context, rightDrawable, hierarchy, AndesButtonIconOrientation.RIGHT)
             }
             else -> {
                 null // No icon has been specified
@@ -178,58 +179,37 @@ internal class AndesLargeButtonSize : AndesButtonSizeInterface {
         }
     }
 
-    private fun handleLeftIcon(context: Context, leftIcon: Drawable, hierarchy: AndesButtonHierarchyInterface): IconConfig? {
+    private fun handleIcon(context: Context, icon: Drawable,
+        hierarchy: AndesButtonHierarchyInterface, orientation: AndesButtonIconOrientation): IconConfig? {
         return try {
-            val leftBitmapDrawable = buildColoredAndesBitmapDrawable(
-                    leftIcon as BitmapDrawable,
+            val bitmapDrawable = buildColoredAndesBitmapDrawable(
+                    icon as BitmapDrawable,
                     context,
                     context.resources.getDimensionPixelSize(R.dimen.andes_button_icon_width),
                     context.resources.getDimensionPixelSize(R.dimen.andes_button_icon_height),
                     hierarchy.iconColor(context)
             )
-            IconConfig(leftIcon = leftBitmapDrawable, rightIcon = null)
+            when(orientation) {
+                AndesButtonIconOrientation.LEFT -> IconConfig(leftIcon = bitmapDrawable, rightIcon = null)
+                AndesButtonIconOrientation.RIGHT -> IconConfig(leftIcon = null, rightIcon = bitmapDrawable)
+
+            }
         } catch (e: FileNotFoundException) {
             IconConfig(leftIcon = null, rightIcon = null)
         }
     }
 
-    private fun handleRightIcon(context: Context, rightIcon: Drawable, hierarchy: AndesButtonHierarchyInterface): IconConfig? {
-        return try {
-            val rightBitmapDrawable = buildColoredAndesBitmapDrawable(
-                rightIcon as BitmapDrawable,
-                context,
-                context.resources.getDimensionPixelSize(R.dimen.andes_button_icon_width),
-                context.resources.getDimensionPixelSize(R.dimen.andes_button_icon_height),
-                hierarchy.iconColor(context)
-            )
-            IconConfig(leftIcon = null, rightIcon = rightBitmapDrawable)
-        } catch (e: FileNotFoundException) {
-            IconConfig(leftIcon = null, rightIcon = null)
-        }
-    }
-
-    private fun handleLeftIcon(context: Context, leftIcon: String, hierarchy: AndesButtonHierarchyInterface): IconConfig? {
+    private fun handleStringIcon(context: Context, leftIcon: String,
+        hierarchy: AndesButtonHierarchyInterface, orientation: AndesButtonIconOrientation): IconConfig? {
         val icon = IconProvider(context)
                 .loadIcon(leftIcon)
         icon?.let {
-            return handleLeftIcon(context, icon, hierarchy)
+            return when(orientation) {
+                AndesButtonIconOrientation.LEFT -> handleIcon(context, icon, hierarchy, AndesButtonIconOrientation.LEFT)
+                AndesButtonIconOrientation.RIGHT -> handleIcon(context, icon, hierarchy, AndesButtonIconOrientation.RIGHT)
+            }
         }
         return null
-    }
-
-    private fun handleRightIcon(context: Context, rightIcon: String, hierarchy: AndesButtonHierarchyInterface): IconConfig? {
-        return try {
-            val rightBitmapDrawable = buildColoredAndesBitmapDrawable(
-                IconProvider(context).loadIcon(rightIcon) as BitmapDrawable,
-                context,
-                context.resources.getDimensionPixelSize(R.dimen.andes_button_icon_width),
-                context.resources.getDimensionPixelSize(R.dimen.andes_button_icon_height),
-                hierarchy.iconColor(context)
-            )
-            IconConfig(leftIcon = null, rightIcon = rightBitmapDrawable)
-        } catch (e: FileNotFoundException) {
-            IconConfig(leftIcon = null, rightIcon = null)
-        }
     }
 
     override fun canDisplayIcon() = true
