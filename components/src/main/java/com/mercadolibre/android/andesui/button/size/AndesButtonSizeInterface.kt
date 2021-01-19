@@ -112,6 +112,7 @@ internal interface AndesButtonSizeInterface {
         leftIcon: String?,
         rightIcon: String?,
         leftDrawable: Drawable?,
+        rightDrawable: Drawable?,
         context: Context
     ): IconConfig?
 
@@ -154,6 +155,7 @@ internal class AndesLargeButtonSize : AndesButtonSizeInterface {
         leftIcon: String?,
         rightIcon: String?,
         leftDrawable: Drawable?,
+        rightDrawable: Drawable?,
         context: Context
     ): IconConfig? {
 
@@ -166,6 +168,9 @@ internal class AndesLargeButtonSize : AndesButtonSizeInterface {
             }
             leftDrawable != null -> { // Ignoring if rightIcon is also non null: Left icon has higher precedence than right
                 handleLeftIcon(context, leftDrawable, hierarchy)
+            }
+            rightDrawable != null -> { // Ignoring if rightIcon is also non null: Left icon has higher precedence than right
+                handleRightIcon(context, rightDrawable, hierarchy)
             }
             else -> {
                 null // No icon has been specified
@@ -183,6 +188,21 @@ internal class AndesLargeButtonSize : AndesButtonSizeInterface {
                     hierarchy.iconColor(context)
             )
             IconConfig(leftIcon = leftBitmapDrawable, rightIcon = null)
+        } catch (e: FileNotFoundException) {
+            IconConfig(leftIcon = null, rightIcon = null)
+        }
+    }
+
+    private fun handleRightIcon(context: Context, rightIcon: Drawable, hierarchy: AndesButtonHierarchyInterface): IconConfig? {
+        return try {
+            val rightBitmapDrawable = buildColoredAndesBitmapDrawable(
+                rightIcon as BitmapDrawable,
+                context,
+                context.resources.getDimensionPixelSize(R.dimen.andes_button_icon_width),
+                context.resources.getDimensionPixelSize(R.dimen.andes_button_icon_height),
+                hierarchy.iconColor(context)
+            )
+            IconConfig(leftIcon = null, rightIcon = rightBitmapDrawable)
         } catch (e: FileNotFoundException) {
             IconConfig(leftIcon = null, rightIcon = null)
         }
@@ -238,6 +258,7 @@ internal class AndesMediumButtonSize : AndesButtonSizeInterface {
         leftIcon: String?,
         rightIcon: String?,
         leftDrawable: Drawable?,
+        rightDrawable: Drawable?,
         context: Context
     ): Nothing? = null
 }
@@ -263,6 +284,7 @@ internal class AndesSmallButtonSize : AndesButtonSizeInterface {
         leftIcon: String?,
         rightIcon: String?,
         leftDrawable: Drawable?,
+        rightDrawable: Drawable?,
         context: Context
     ): Nothing? = null
 }

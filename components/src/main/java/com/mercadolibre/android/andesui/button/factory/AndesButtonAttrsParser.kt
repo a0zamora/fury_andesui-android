@@ -18,7 +18,8 @@ internal data class AndesButtonAttrs(
     val andesButtonText: String?,
     val andesButtonEnabled: Boolean = true,
     val andesButtonIsLoading: Boolean = false,
-    val leftDrawable: Drawable? = null
+    val andesButtonLeftDrawable: Drawable? = null,
+    val andesButtonRightDrawable: Drawable? = null
 )
 
 /**

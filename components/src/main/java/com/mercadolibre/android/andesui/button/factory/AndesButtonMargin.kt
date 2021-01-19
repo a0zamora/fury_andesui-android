@@ -21,7 +21,8 @@ internal class AndesButtonMargin(
     private val leftIcon: String?,
     private val rightIcon: String?,
     private val context: Context,
-    private val leftDrawable: Drawable?
+    private val leftDrawable: Drawable?,
+    private val rightDrawable: Drawable?
 ) {
 
     var textLeftMargin: Int = 0
@@ -42,7 +43,7 @@ internal class AndesButtonMargin(
     }
 
     private fun hasLeftIcon() = size.canDisplayIcon() && (leftIcon != null || leftDrawable != null)
-    private fun hasRightIcon() = size.canDisplayIcon() && rightIcon != null
+    private fun hasRightIcon() = size.canDisplayIcon() && (rightIcon != null || rightDrawable != null)
 
     private fun configureLeftIconValues() {
         textLeftMargin = 0
